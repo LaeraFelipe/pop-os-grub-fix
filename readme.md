@@ -60,13 +60,13 @@ The script sets up a post-update hook (`/etc/grub.d/99_sync_grub`) so every `upd
 
 ```bash
 # From inside the cloned repo folder:
+chmod +x ./install.sh
 sudo ./install.sh
 ```
 
 What the installer does:
 
 * Creates or updates `/etc/grub.d/99_sync_grub` (executable).
-* Detects your active EFI vendor directory (`pop` or `ubuntu`).
 * After each `update-grub`, copies the fresh config and assets into the EFI GRUB directory.
 * Optionally logs to `/var/log/grub-sync.log`.
 
@@ -129,7 +129,7 @@ If you also want to remove GRUB entirely and return to systemd-boot, follow Syst
 ```
 popos-grub-fix/
 ├─ install.sh                 # Main installer (run as root)
-├─ hooks/99_sync_grub         # Post-update hook template
+├─ 99_sync_grub               # Hook to sync grub files    
 └─ README.md
 ```
 

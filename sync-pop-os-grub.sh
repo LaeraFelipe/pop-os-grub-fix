@@ -6,7 +6,7 @@ EFI_MOUNT=${EFI_MOUNT:-/boot/efi}
 TARGET_DIR="${EFI_MOUNT}/EFI/ubuntu"
 
 {
-  echo "[$(date)] Postinst copy hook starting (kernel=$1 image=$2)"
+  echo "[$(date)] Postinst copy hook starting"
 
   # At this point update-grub has already run in an earlier hook.
   echo "Syncing /boot/grub -> $TARGET_DIR ..."
