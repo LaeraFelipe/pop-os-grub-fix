@@ -5,7 +5,7 @@ SCRIPT_NAME="sync-pop-os-grub.sh"
 DEST_DIR="/etc/grub.d"
 DEST_FILE="$DEST_DIR/99_sync_grub"
 
-echo "🔧 Installing post-update-grub hook..."
+echo "Installing post-update-grub hook..."
 
 # Ensure source file exists
 if [[ ! -f "./$SCRIPT_NAME" ]]; then
