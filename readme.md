@@ -90,7 +90,17 @@ sudo rm -f /etc/grub.d/99_sync_grub
 sudo update-grub
 ```
 
-If you also want to remove GRUB entirely and return to systemd-boot, follow System76’s official guidance for restoring systemd-boot (outside the scope of this repo).
+---
+
+## Disclaimer
+
+If you make **new changes using GRUB Customizer** (such as adding/removing entries or altering configuration) or if you **apply a new GRUB theme**, you **must run**:
+
+```bash
+sudo update-grub
+```
+
+This ensures that all modifications are properly written into the GRUB configuration and synchronized with your EFI partition. Skipping this step may result in outdated menus, missing themes, or boot issues.
 
 ---
 

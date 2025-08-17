@@ -14,7 +14,7 @@ TARGET_DIR="${EFI_MOUNT}/EFI/ubuntu"
   if command -v rsync >/dev/null 2>&1; then
     rsync -a --delete /boot/grub/ "$TARGET_DIR/"
   else
-    cp -a /boot/grub/. "$TARGET_DIR/"
+    cp -a /boot/grub/* "$TARGET_DIR/"
   fi
 
   echo "Copy hook done."
