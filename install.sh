@@ -1,26 +1,25 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-SCRIPT_NAME="sync-pop-os-grub.sh"
-DEST_DIR="/etc/grub.d"
-DEST_FILE="$DEST_DIR/99_sync_grub"
+SCRIPT_NAME="handle-grub-change.sh"
+SERVICE_NAME="grub-monitor.service"
+PATH_UNIT_NAME="grub-monitor.path"
+
+DEST_SCRIPT_FILE="/usr/local/bin/handle-grub-change.sh"
+DEST_SERVICE_FILE="/etc/systemd/system/grub-monitor.service"
+DEST_PATH_UNIT_FILE="/etc/systemd/system/grub-monitor.path"
+
 
 echo "Installing post-update-grub hook..."
 
-# Ensure source file exists
-if [[ ! -f "./$SCRIPT_NAME" ]]; then
-  echo "Error: Source script '$SCRIPT_NAME' not found in current directory."
-  exit 1
-fi
+cp "./$SCRIPT_NAME" "$DEST_SCRIPT_FILE"
+chmod +x "$DEST_SCRIPT_FILE"
 
-# Ensure destination directory exists
-if [[ ! -d "$DEST_DIR" ]]; then
-  echo "Error: Destination directory '$DEST_DIR' does not exist. Ensure that you have grub installed."
-  exit 1
-fi
+cp "./$SERVICE_NAME" "$DEST_SERVICE_FILE"
+cp "./$PATH_UNIT_NAME" "$DEST_PATH_UNIT_FILE"
 
-# Copy and set permissions
-cp "./$SCRIPT_NAME" "$DEST_FILE"
-chmod +x "$DEST_FILE"
+sudo systemctl daemon-reload
+sudo systemctl enable --now grub-monitor.path
 
-echo "Installation finished: $DEST_FILE"
+
+echo "Installation finished"

@@ -1,0 +1,6 @@
+[Unit]
+Description=Run script to sync grub files when grub.cfg changes
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/handle-grub-change.sh
