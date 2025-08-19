@@ -46,7 +46,7 @@ sudo apt install -y grub-efi-amd64 shim-signed
 # Ensure the ESP is present
 sudo mkdir -p /boot/efi
 
-# Install GRUB to the EFI (adjust --efi-directory if yours differs)
+# Install GRUB to the EFI
 sudo grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=pop
 
 # Generate GRUB configuration
@@ -56,7 +56,7 @@ sudo update-grub
 
 ## 4) Run the installer (this repo)
 
-The script sets up a post-update hook (`/etc/grub.d/99_sync_grub`) so every `update-grub` automatically syncs the generated config into your EFI path (e.g., `/boot/efi/EFI/pop/` or `/boot/efi/EFI/ubuntu/`), avoiding the “GRUB minimal shell” and stale config issues.
+The script sets up a service to watch for grub changes so every `update-grub` automatically syncs the generated config into your EFI path (e.g., `/boot/efi/EFI/pop/` or `/boot/efi/EFI/ubuntu/`), avoiding the “GRUB minimal shell” and stale config issues.
 
 ```bash
 # From inside the cloned repo folder:
@@ -66,7 +66,8 @@ sudo ./install.sh
 
 What the installer does:
 
-* Creates or updates `/etc/grub.d/99_sync_grub` (executable).
+* Creates or updates `/usr/local/bin/handle-grub-change.sh` (executable).
+* Creates or updates a service that will monitor changes on grub files.
 * After each `update-grub`, copies the fresh config and assets into the EFI GRUB directory.
 * Optionally logs to `/var/log/grub-sync.log`.
 
@@ -86,21 +87,16 @@ You should now boot straight into the GRUB menu (or your default OS) without dro
 ## Uninstall
 
 ```bash
-sudo rm -f /etc/grub.d/99_sync_grub
-sudo update-grub
+sudo systemctl stop grub-monitor.service
+sudo systemctl stop grub-monitor.path
+
+sudo systemctl disable grub-monitor.service
+sudo systemctl disable grub-monitor.path
+
+sudo systemctl daemon-reload
+
+sudo rm -f /usr/local/bin/handle-grub-change.sh
 ```
-
----
-
-## Disclaimer
-
-If you make **new changes using GRUB Customizer** (such as adding/removing entries or altering configuration) or if you **apply a new GRUB theme**, you **must run**:
-
-```bash
-sudo update-grub
-```
-
-This ensures that all modifications are properly written into the GRUB configuration and synchronized with your EFI partition. Skipping this step may result in outdated menus, missing themes, or boot issues.
 
 ---
 
@@ -129,7 +125,7 @@ This ensures that all modifications are properly written into the GRUB configura
   * Check `/var/log/grub-sync.log` (if enabled by the script) or run:
 
     ```bash
-    sudo bash -x /etc/grub.d/99_sync_grub
+    sudo bash -x /usr/local/bin/handle-grub-change.sh
     ```
 
 ---
@@ -139,7 +135,9 @@ This ensures that all modifications are properly written into the GRUB configura
 ```
 popos-grub-fix/
 ├─ install.sh                 # Main installer (run as root)
-├─ 99_sync_grub               # Hook to sync grub files    
+├─ grub-monitor.path          # Unit path    
+├─ grub-monitor.service       # Service    
+├─ handle-grub-change.sh      # Hook to sync grub files    
 └─ README.md
 ```
 
