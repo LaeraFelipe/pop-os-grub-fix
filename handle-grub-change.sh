@@ -11,10 +11,15 @@ TARGET_POP_OS_GRUB_DIR="${EFI_MOUNT}/EFI/pop"
 
   echo "Syncing /boot/grub -> $TARGET_GRUB_DIR ..."
   mkdir -p "$TARGET_GRUB_DIR"
+  
+  if command -v rsync >/dev/null 2>&1; then
+    echo "running with rsync..."
+    rsync -a --delete /boot/grub/ "$TARGET_GRUB_DIR/"
+  else
+    echo "running with cp..."
+    cp -a /boot/grub/* "$TARGET_GRUB_DIR/"
+  fi
 
-  sleep 30
-
-  cp -a /boot/grub/* "$TARGET_GRUB_DIR/"
   cp /boot/grub/grub.cfg "$TARGET_POP_OS_GRUB_DIR/grub.cfg"
 
   echo "Copy hook done."
